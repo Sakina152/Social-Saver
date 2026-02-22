@@ -1,8 +1,10 @@
 fastapi
 uvicorn
+motor
+playwright
+google-generativeai
 pymongo[srv]
 python-multipart
 python-dotenv
 twilio
-openai
 trafilatura

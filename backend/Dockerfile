@@ -18,6 +18,8 @@ RUN npm install
 COPY requirements.txt ./
 RUN pip3 install --no-cache-dir -r requirements.txt --break-system-packages
 
+# CRITICAL: Install Playwright browsers/drivers
+RUN playwright install --with-deps chromium
 # Copy code
 COPY . .
 
