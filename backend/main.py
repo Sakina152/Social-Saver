@@ -97,5 +97,9 @@ async def whatsapp_webhook(request: Request, background_tasks: BackgroundTasks):
         print(f"Webhook Error: {e}")
         return {"error": str(e)}
 
+@app.get("/health")
+def health_check():
+    return {"status": "alive"}
+
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
