@@ -2,7 +2,7 @@ fastapi
 uvicorn
 motor
 playwright
-google-generativeai
+google-genai
 pymongo[srv]
 python-multipart
 python-dotenv
