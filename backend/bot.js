@@ -33,7 +33,7 @@ const client = new Client({
 
 // --- CONFIGURATION ---
 // Change this to your Vercel URL when you deploy the frontend
-const DASHBOARD_URL = "https://your-social-saver.vercel.app";
+const DASHBOARD_URL = "https://social-saver-git-main-sakinas-projects-00bf43f6.vercel.app";
 // 127.0.0.1 works for both local and Render's internal container networking
 const PYTHON_BACKEND = "http://127.0.0.1:8000";
 
