@@ -4,14 +4,13 @@ const axios = require('axios');
 
 /**
  * SOCIAL SAVER - WHATSAPP BOT
- * Optimized for both Windows (Local) and Linux (Render)
+ * Optimized for Render logs and memory management
  */
 
 const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
         headless: true,
-        // Critical flags for Render's 512MB RAM limit
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -21,33 +20,28 @@ const client = new Client({
             '--no-zygote',
             '--single-process'
         ],
-        /* SMART PATH LOGIC:
-           1. If on Windows (win32), let Puppeteer find Chrome automatically (null).
-           2. If on Linux (Render), use the chromium path defined in our Dockerfile.
-        */
         executablePath: process.platform === 'win32'
             ? null
             : (process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium')
     }
 });
 
-// --- CONFIGURATION ---
-// Change this to your Vercel URL when you deploy the frontend
 const DASHBOARD_URL = "https://social-saver-git-main-sakinas-projects-00bf43f6.vercel.app";
-// 127.0.0.1 works for both local and Render's internal container networking
 const PYTHON_BACKEND = "http://127.0.0.1:8000";
 
-// --- QR CODE HANDLING ---
+// --- QR CODE HANDLING (THE CLICKABLE LINK UPDATE) ---
 client.on('qr', qr => {
     console.log('---------------------------------------------------------');
-    console.log('SCAN THIS QR CODE WITH WHATSAPP:');
+    console.log('🔗 CLICK THIS LINK TO SCAN YOUR QR CODE:');
+    // This creates a clickable URL that shows the QR as a clean image
+    console.log(`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qr)}`);
     console.log('---------------------------------------------------------');
 
+    // Also printing the terminal version just in case
     qrcode.generate(qr, { small: true });
 
-    console.log('---------------------------------------------------------');
     if (process.platform !== 'win32') {
-        console.log('💡 RENDER TIP: Zoom out browser to 50% to align QR.');
+        console.log('💡 RENDER TIP: If the terminal QR above looks broken, use the LINK instead!');
     }
 });
 
@@ -55,12 +49,15 @@ client.on('ready', () => {
     console.log('✅ Success! WhatsApp Bot is LIVE and connected.');
 });
 
-client.on('message', async msg => {
+// Added a listener for connection failure to help debugging
+client.on('auth_failure', msg => {
+    console.error('❌ AUTHENTICATION FAILURE:', msg);
+});
 
+client.on('message', async msg => {
     // 1. COMMAND: /link user@email.com
     if (msg.body.startsWith('/link ')) {
         const email = msg.body.split(' ')[1];
-
         if (!email || !email.includes('@')) {
             return msg.reply("❌ *Invalid Format*\nPlease use: `/link your-email@gmail.com`", undefined, { sendSeen: false });
         }
@@ -89,7 +86,6 @@ client.on('message', async msg => {
 
         try {
             console.log(`📩 Incoming link from ${msg.from}`);
-
             await axios.post(`${PYTHON_BACKEND}/webhook`, {
                 url: msg.body,
                 sender: msg.from
@@ -98,7 +94,6 @@ client.on('message', async msg => {
             setTimeout(() => {
                 msg.reply(`✅ *Saved successfully!*\n\nView it here:\n🔗 ${DASHBOARD_URL}`, undefined, { sendSeen: false });
             }, 3000);
-
         } catch (err) {
             console.error("❌ Webhook Error:", err.message);
             msg.reply("⚠️ *Brain Freeze!*\nI couldn't reach my processing unit.", undefined, { sendSeen: false });
@@ -108,4 +103,4 @@ client.on('message', async msg => {
 
 // Initialization
 console.log(`🚀 Starting Bot on ${process.platform === 'win32' ? 'Windows' : 'Linux'}...`);
-client.initialize();
+client.initialize().catch(err => console.error('❌ Failed to initialize:', err));
