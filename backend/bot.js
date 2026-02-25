@@ -1,5 +1,4 @@
 const { Client, LocalAuth } = require('whatsapp-web.js');
-const qrcode = require('qrcode-terminal');
 const axios = require('axios');
 
 /**
@@ -18,7 +17,17 @@ const client = new Client({
             '--disable-extensions',
             '--disable-gpu',
             '--no-zygote',
-            '--single-process'
+            '--single-process',
+            '--disable-background-timer-throttling',
+            '--disable-backgrounding-occluded-windows',
+            '--disable-breakpad',
+            '--disable-component-extensions-with-background-pages',
+            '--disable-features=TranslateUI,BlinkGenPropertyTrees',
+            '--disable-ipc-flooding-protection',
+            '--disable-renderer-backgrounding',
+            '--enable-features=NetworkService,NetworkServiceInProcess',
+            '--force-fieldtrials=SiteIsolationExtensions/Control',
+            '--mute-audio'
         ],
         executablePath: process.platform === 'win32'
             ? null
@@ -29,20 +38,20 @@ const client = new Client({
 const DASHBOARD_URL = "https://social-saver-git-main-sakinas-projects-00bf43f6.vercel.app";
 const PYTHON_BACKEND = "http://127.0.0.1:8000";
 
-// --- QR CODE HANDLING (THE CLICKABLE LINK UPDATE) ---
+// --- QR CODE HANDLING (OPTIMIZED FOR RENDER) ---
+let qrCount = 0;
+const MAX_QR_ATTEMPTS = 5;
+
 client.on('qr', qr => {
-    console.log('---------------------------------------------------------');
-    console.log('🔗 CLICK THIS LINK TO SCAN YOUR QR CODE:');
-    // This creates a clickable URL that shows the QR as a clean image
-    console.log(`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qr)}`);
-    console.log('---------------------------------------------------------');
-
-    // Also printing the terminal version just in case
-    qrcode.generate(qr, { small: true });
-
-    if (process.platform !== 'win32') {
-        console.log('💡 RENDER TIP: If the terminal QR above looks broken, use the LINK instead!');
+    qrCount++;
+    if (qrCount > MAX_QR_ATTEMPTS) {
+        console.log('🚨 MAX QR ATTEMPTS REACHED. Stopping bot to save memory.');
+        client.destroy();
+        process.exit(1);
     }
+
+    console.log(`[${qrCount}/${MAX_QR_ATTEMPTS}] 🔗 SCAN QR CODE AT THIS LINK:`);
+    console.log(`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qr)}`);
 });
 
 client.on('ready', () => {
