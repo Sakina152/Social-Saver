@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -36,7 +37,9 @@ export default function RootLayout({
             <Sidebar />
 
             <div className="flex-1 transition-all duration-300 ease-in-out pl-20 lg:pl-[260px]">
-              <Header />
+              <Suspense fallback={<div className="h-16 border-b border-border bg-background animate-pulse" />}>
+                <Header />
+              </Suspense>
               <main className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
                 {children}
               </main>
