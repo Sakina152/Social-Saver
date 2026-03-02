@@ -2,7 +2,7 @@
 **An AI-driven personal knowledge management system for link preservation and semantic organization.**
 
 [![Architecture: Microservices](https://img.shields.io/badge/Architecture-Hybrid_Microservices-blueviolet?style=for-the-badge)](https://github.com/)
-[![Engine: Gemini 1.5 Flash](https://img.shields.io/badge/AI-Gemini_1.5_Flash-blue?style=for-the-badge&logo=google-gemini)](https://ai.google.dev/)
+[![Engine: Gemini 2.5 Flash](https://img.shields.io/badge/AI-Gemini_2.5_Flash-blue?style=for-the-badge&logo=google-gemini)](https://ai.google.dev/)
 [![Scraper: Playwright](https://img.shields.io/badge/Scraping-Playwright-2EAD33?style=for-the-badge&logo=playwright)](https://playwright.dev/)
 [![Stack: FastAPI & Next.js](https://img.shields.io/badge/Stack-FastAPI_%2F_Next.js-009688?style=for-the-badge)](https://fastapi.tiangolo.com/)
 
@@ -50,7 +50,7 @@ sequenceDiagram
 
 ### 2. Processing Pipeline (`FastAPI`)
 - **Asynchronous Execution**: Leverages FastAPI `BackgroundTasks` to offload scraping and AI processing, ensuring immediate response times ($<$200ms) for the WhatsApp gateway.
-- **Intelligence Layer**: Utilizes `Gemini 1.5 Flash` with **Structured Outputs**. We enforce a strict Pydantic schema for every inference to ensure zero-shot classification reliability.
+- **Intelligence Layer**: Utilizes `Gemini 2.5 Flash` with **Structured Outputs**. We enforce a strict Pydantic schema for every inference to ensure zero-shot classification reliability.
 
 ### 3. Extraction Strategy (`Playwright` & `Trafilatura`)
 - **Dynamic Content**: For JavaScript-heavy platforms (e.g., Instagram), Social Saver intercepts internal GraphQL and Profile JSON responses to bypass DOM clutter and extract the "ground truth" data.
